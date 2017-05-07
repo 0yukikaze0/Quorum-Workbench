@@ -1,0 +1,24 @@
+{
+  "name": "quorum-workbench",
+  "version": "1.0.0-alpha",
+  "description": "Quorum network management and orchestration suite",
+  "main": "workbench.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0yukikaze0/Quorum-Workbench.git"
+  },
+  "keywords": [
+    "quorum",
+    "ethereum",
+    "network"
+  ],
+  "author": "Ashfaq Ahmed Shaik",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/0yukikaze0/Quorum-Workbench/issues"
+  },
+  "homepage": "https://github.com/0yukikaze0/Quorum-Workbench#readme"
+}
