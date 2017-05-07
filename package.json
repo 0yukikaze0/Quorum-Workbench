@@ -20,5 +20,17 @@
   "bugs": {
     "url": "https://github.com/0yukikaze0/Quorum-Workbench/issues"
   },
-  "homepage": "https://github.com/0yukikaze0/Quorum-Workbench#readme"
+  "homepage": "https://github.com/0yukikaze0/Quorum-Workbench#readme",
+  "dependencies": {
+    "async": "^2.4.0",
+    "body-parser": "^1.17.1",
+    "chai": "^3.5.0",
+    "config": "^1.26.1",
+    "express": "^4.15.2",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.15.2",
+    "handlebars": "^4.0.8",
+    "mocha": "^3.3.0",
+    "request": "^2.81.0"
+  }
 }
