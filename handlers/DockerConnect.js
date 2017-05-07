@@ -13,8 +13,8 @@ class DockerConnect {
             let images = [];
             this._transmitRequest('GET','/images/json')
                 .then((response) => {
-                        response.forEach((imageEntry) => {
-                            imageEntry.RepoTags.forEach((tag) => {
+                        response.forEach((image) => {
+                            image.RepoTags.forEach((tag) => {
                                 images.push(tag);
                             }, this);
                         }, this);
@@ -26,11 +26,20 @@ class DockerConnect {
         })        
     }
 
-    _transmitRequest(method, path) {
+    getAllContainers() {
+        return new Promise((respond, reject) => {            
+            this._transmitRequest('GET','/containers/json', {all:true})
+                .then(  (response)  => {respond(response)},
+                        ()          => reject() );
+        })
+    }
+
+    _transmitRequest(method, path, params) {
         return new Promise((respond, reject) => {
             request({
                 method: method,
                 url: `http://unix:${config.get('docker.socketPath')}:${path}`,
+                qs:params,
                 headers: { host: 'http' }
             }, (err, resp, body) => {
                 if(err){
