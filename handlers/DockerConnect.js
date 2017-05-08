@@ -48,14 +48,8 @@ class DockerConnect {
         return new Promise((respond, reject) => {
             let images = [];
             bifrost.transmitRequest(GET,'/images/json')
-                .then((response) => {
-                        response.forEach((image) => {
-                            image.RepoTags.forEach((tag) => {
-                                images.push(tag);
-                            }, this);
-                        }, this);
-                        respond(images);
-                    },(err) => reject(err))
+                .then(  (response)  => respond(response),
+                        (err)       => reject(err) );
         })        
     }
 
