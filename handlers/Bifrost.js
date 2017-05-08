@@ -53,8 +53,35 @@ class Bifrost{
                 this._transmitPostRequest(path, params)
                     .then(  (result)    => respond(result),
                             (err)       => reject(err));
+            } else if(method === DELETE){
+                this._transmitDeleteRequest(path, params)
+                    .then(  (result)    => respond(result),
+                            (err)       => reject(err));
             }
         })
+    }
+
+    /**
+     * @function {_transmitDeleteRequest}
+     * @param  {string} path   {HTTP URI path}
+     * @param  {string} params {Parameter map}
+     * @return {Promise}
+     */
+    _transmitDeleteRequest(path, params) {
+        return new Promise((respond,reject) => {
+             request.delete({
+                url: `http://unix:${config.get('docker.socketPath')}:${path}`,
+                body: params,
+                json:true,                
+                headers: { host: 'http' }
+            }, (err, resp, body) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    respond(body);
+                }
+            });
+        });
     }
 
     /**
@@ -77,7 +104,7 @@ class Bifrost{
                 } else {
                     respond(body);
                 }
-            });     
+            });
         });
     }
 
@@ -89,18 +116,28 @@ class Bifrost{
      */
     _transmitGetRequest(path, params){
         return new Promise((respond,reject) => {
-            console.log(params)
+            try{
+            let qsJson      = {};
+            let qsString    = '';
+            if( typeof params === 'string'){
+                qsString = '?' + params;
+                console.log(qsString)
+            } else {
+                console.log('Object')
+                qsJson = params;
+            }
             request.get({
-                url: `http://unix:${config.get('docker.socketPath')}:${path}`,
-                qs: params,
+                url: `http://unix:${config.get('docker.socketPath')}:${path}${qsString}`,
+                qs: qsJson,
                 headers: { host: 'http' }
             }, (err, resp, body) => {
                 if (err) {
                     reject(err)
-                } else {
+                } else {                    
                     respond(JSON.parse(body));
                 }
-            })     
+            })  
+            }catch(e){console.log(e)}   
         });
     }
 }
