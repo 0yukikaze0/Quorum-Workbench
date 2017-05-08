@@ -1,0 +1,108 @@
+/**
+    Quorum-Workbench - Bifrost Network request/response manager
+    Copyright (C) 2017  Ashfaq Ahmed Shaik
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/*
+* +--------------------------------------------------------------+
+*  Bifrost - Utility:Network request/response manager
+*  Version : v1.0.0-Alpha
+*  Author  : Ashfaq Ahmed S [https://github.com/0yukikaze0]
+* +--------------------------------------------------------------+
+*/
+
+var config  = require('config');
+var request = require('request');
+var qs      = require('querystring');
+
+const GET       = 'GET';
+const POST      = 'POST';
+const PUT       = 'PUT';
+const DELETE    = 'DELETE';
+
+class Bifrost{
+    constructor(){}
+
+    /**
+     * @function {_transmitRequest}
+     * @param  {string} method {HTTP Method}
+     * @param  {string} path   {URI path}
+     * @param  {object} params {parameter map}
+     * @return {Promise} 
+     */
+    transmitRequest(method, path, params) {
+        return new Promise((respond, reject) => {            
+            if(method === GET){
+                this._transmitGetRequest(path, params)
+                    .then(  (result)    => respond(result),
+                            (err)       => reject(err));
+            } else if(method === POST){
+                this._transmitPostRequest(path, params)
+                    .then(  (result)    => respond(result),
+                            (err)       => reject(err));
+            }
+        })
+    }
+
+    /**
+     * Transmits a POST request to URI and returns a promise
+     * @function {_transmitPostRequest}
+     * @param  {string} path   {HTTP URI path}
+     * @param  {object} params {Parameter map}
+     * @return {Promise} 
+     */
+    _transmitPostRequest(path, params) {
+        return new Promise((respond,reject) => {
+            request.post({
+                url: `http://unix:${config.get('docker.socketPath')}:${path}`,
+                body: params,
+                json:true,                
+                headers: { host: 'http' }
+            }, (err, resp, body) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    respond(body);
+                }
+            });     
+        });
+    }
+
+    /**
+     * @function {_transmitGetRequest}
+     * @param  {string} path   {HTTP URI path}
+     * @param  {object} params {Parameter map}
+     * @return {Promise} 
+     */
+    _transmitGetRequest(path, params){
+        return new Promise((respond,reject) => {
+            console.log(params)
+            request.get({
+                url: `http://unix:${config.get('docker.socketPath')}:${path}`,
+                qs: params,
+                headers: { host: 'http' }
+            }, (err, resp, body) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    respond(JSON.parse(body));
+                }
+            })     
+        });
+    }
+}
+
+module.exports = Bifrost;
