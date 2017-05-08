@@ -92,8 +92,8 @@ class DockerConnect {
      */
     inspectNetwork(networkName) {
         return new Promise((respond,reject) => {
-            networkName = networkName.replace(/ /g,'_');
-            bifrost.transmitRequest(GET, '/networks',{filters:"{name:networkName}"})
+            networkName = networkName.replace(/ /g,'_');            
+            bifrost.transmitRequest(GET, '/networks',`filters={"name":{"${networkName}":true}}`)
                 .then(  (networks)  => respond(networks),
                         (err)       => reject(err)  );
         });
@@ -118,7 +118,19 @@ class DockerConnect {
         return new Promise((respond,reject) => {
             networkName = networkName.replace(/ /g,'_');
             this.inspectNetwork(networkName)
-                .then( (result) => {console.log(result)})
+                .then( (result) => {
+
+                    if(result.length > 0){
+                        let networkId = result[0].Id;
+                        console.log(networkId)
+                        bifrost.transmitRequest(DELETE, `/networks/${networkId}`)
+                            .then(  (result)    => respond(result),
+                                    (err)       => reject(err));
+                    } else {
+                        console.log('Network doesnt exist')
+                    }
+
+                })
              
         });
     }
