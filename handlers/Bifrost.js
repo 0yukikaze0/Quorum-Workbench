@@ -21,6 +21,16 @@
 *  Bifrost - Utility:Network request/response manager
 *  Version : v1.0.0-Alpha
 *  Author  : Ashfaq Ahmed S [https://github.com/0yukikaze0]
+*  Description :    This network management utitlity talks to a 
+*                   unix socket on the same host machine. 
+*
+*                   Keeping in mind the security concerns,
+*                   Connectivity to docker via tcp is not implemented
+*                   and isnt part of any future implementation plan.
+*
+*                   This program doesnt take security into consideration.
+*                   Please make sure you have proper access controls in
+*                   place.
 * +--------------------------------------------------------------+
 */
 
@@ -44,7 +54,7 @@ class Bifrost{
      * @return {Promise} 
      */
     transmitRequest(method, path, params) {
-        return new Promise((respond, reject) => {            
+        return new Promise((respond, reject) => {
             if(method === GET){
                 this._transmitGetRequest(path, params)
                     .then(  (result)    => respond(result),
@@ -133,11 +143,11 @@ class Bifrost{
             }, (err, resp, body) => {
                 if (err) {
                     reject(err)
-                } else {                    
+                } else {
                     respond(JSON.parse(body));
                 }
             })  
-            }catch(e){console.log(e)}   
+            }catch(e){console.log(e)}
         });
     }
 }

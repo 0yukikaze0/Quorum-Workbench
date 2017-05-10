@@ -54,7 +54,7 @@ class DockerConnect {
     }
 
     /**
-     * Returns anarray of all docker containers
+     * Returns an array of all docker containers
      * @function {getAllContainers}
      * @return {Promise}
      */
@@ -94,9 +94,10 @@ class DockerConnect {
     }
 
     /**
+     * Creates a docker network with 
      * @function {createNetwork}
      * @param  {string} networkName {Name of the network}
-     * @return {type} {description}
+     * @return {Promise} {Promise with network id}
      */
     createNetwork(networkName) {
         return new Promise((respond,reject) => {
@@ -108,12 +109,17 @@ class DockerConnect {
         });
     }
 
+    /**
+     * Creates a docker network with 
+     * @function {deleteNetwork}
+     * @param  {string} networkName {Name of the network}
+     * @return {Promise}
+     */
     deleteNetwork(networkName) {
         return new Promise((respond,reject) => {
             networkName = networkName.replace(/ /g,'_');
             this.inspectNetwork(networkName)
                 .then( (result) => {
-
                     if(result.length > 0){
                         let networkId = result[0].Id;
                         console.log(networkId)
@@ -123,9 +129,7 @@ class DockerConnect {
                     } else {
                         console.log('Network doesnt exist')
                     }
-
                 })
-             
         });
     }
     
