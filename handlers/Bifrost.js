@@ -53,14 +53,14 @@ class Bifrost{
      * @param  {object} params {parameter map}
      * @return {Promise} 
      */
-    transmitRequest(method, path, params) {
+    transmitRequest(method, path, params, queryParams) {
         return new Promise((respond, reject) => {
             if(method === GET){
                 this._transmitGetRequest(path, params)
                     .then(  (result)    => respond(result),
                             (err)       => reject(err));
             } else if(method === POST){
-                this._transmitPostRequest(path, params)
+                this._transmitPostRequest(path, params, queryParams)
                     .then(  (result)    => respond(result),
                             (err)       => reject(err));
             } else if(method === DELETE){
@@ -101,10 +101,15 @@ class Bifrost{
      * @param  {object} params {Parameter map}
      * @return {Promise} 
      */
-    _transmitPostRequest(path, params) {
+    _transmitPostRequest(path, params, queryParams) {
         return new Promise((respond,reject) => {
+            let qsString = '';
+            if (queryParams != undefined && queryParams.trim().length > 0){
+                qsString = '?' + queryParams;
+            }
+
             request.post({
-                url: `http://unix:${config.get('docker.socketPath')}:${path}`,
+                url: `http://unix:${config.get('docker.socketPath')}:${path}${qsString}`,
                 body: params,
                 json:true,                
                 headers: { host: 'http' }
@@ -126,14 +131,11 @@ class Bifrost{
      */
     _transmitGetRequest(path, params){
         return new Promise((respond,reject) => {
-            try{
             let qsJson      = {};
             let qsString    = '';
             if( typeof params === 'string'){
                 qsString = '?' + params;
-                console.log(qsString)
             } else {
-                console.log('Object')
                 qsJson = params;
             }
             request.get({
@@ -147,7 +149,6 @@ class Bifrost{
                     respond(JSON.parse(body));
                 }
             })  
-            }catch(e){console.log(e)}
         });
     }
 }
