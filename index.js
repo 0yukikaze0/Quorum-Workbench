@@ -18,6 +18,7 @@ var contReq = {
     detached : true,
     cmd : [],
     mounts : ["/home/quorum:/data/xyz"],
+    exposedPorts : {"22000/tcp":{}},
     ports : {
         "22000/tcp":[{"HostPort":"25000"}]
     },
@@ -25,5 +26,5 @@ var contReq = {
 }
 
 //docker.createContainer(contReq).then((containers) => {console.log(containers)})
-//docker.startContainer('My_New_Test_Container').then((result) => {console.log(result)})
-docker.stopContainer('My_New_Test_Container').then((result) => {console.log(result)})
+docker.startContainer('My_New_Test_Container').then((result) => {console.log(result)})
+//docker.stopContainer('My_New_Test_Container').then((result) => {console.log(result)})
