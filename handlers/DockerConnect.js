@@ -39,7 +39,11 @@ class DockerConnect {
         
     }
 
-    /**
+    /* +----------------------------------------------------------------------+
+     *  Image Operations
+     * +----------------------------------------------------------------------+ */
+    
+     /**
      * Returns an array of all available docker images
      * @function {getAllImages}
      * @return {Promise}
@@ -52,9 +56,15 @@ class DockerConnect {
                         (err)       => reject(err) );
         })        
     }
-
+    
+    /* +----------------------------------------------------------------------+ */
+    
+    /* +----------------------------------------------------------------------+
+     *  Container Operations
+     * +----------------------------------------------------------------------+ */
+    
     /**
-     * Returns an array of all docker containers
+     * Returns a JSON listing of all docker containers
      * @function {getAllContainers}
      * @return {Promise}
      */
@@ -65,6 +75,92 @@ class DockerConnect {
                         (err)       => reject(err) );
         })
     }
+
+    /**
+     * @function {getConatainersByStatus}
+     * @param  {string | array} Status List {comma separated string or array}
+     * @return {Promise}
+     */
+    getContainersByStatus(statusList){
+        return new Promise((respond,reject) => {
+            let statusFilter = [];
+            if(typeof statusList === 'string'){
+               if(statusList.includes(',')){
+                   let listing = statusList.split(',');
+                   statusFilter = listing;
+               } else {
+                   statusFilter.push(statusList);
+               }
+            } else if (typeof statusList === 'object'){
+               statusFilter = statusList;
+            }
+
+            bifrost.transmitRequest(GET, '/containers/json', `filters={"status":${JSON.stringify(statusFilter)}}`)
+                .then(  (response)  => respond(response),
+                        (err)       => reject(err) );
+        });
+    }
+
+    /**
+     * @function {createContainer}
+     * @param  {Object} Request parameters packed into JSON {Name of the container}
+     * @return {Promise} 
+     */
+    createContainer(params) {
+        return new Promise((respond,reject) => {
+            
+            let containerName = params.containerName.replace(/ /g,'_');
+            
+            /** Build request */
+            let request = {
+                "Image" : params.image,
+                "Cmd" : params.cmd,
+                "AttachStdout" : params.detached,
+                "Tty" : params.tty,
+                "HostConfig":{
+                    "Binds" : params.mounts,
+                    "PortBindings" : params.ports,
+                    "NetworkMode" : params.networkName 
+                }
+            }
+            bifrost.transmitRequest(POST, '/containers/create', request, `name=${containerName}`)
+                .then(  (response)  => respond(response),
+                        (err)       => reject(err) );
+        });
+    }
+
+    /**
+     * Starts a container matching the provided name/id
+     * @function {startContainer}
+     * @param  {string} containerName | Id {Name or Id of the container to start}
+     * @return {Promise} {description}
+     */
+    startContainer(container) {
+        return new Promise((respond,reject) => {
+            bifrost.transmitRequest(POST, `/containers/${container}/start`,{})
+                .then(  (response)  => respond(response),
+                        (err)       => reject(err) );
+        });
+    }
+    
+    /**
+     * Stops a container matching the provided name/id
+     * @function {stopContainer}
+     * @param  {string} containerName | Id {Name or Id of the container to start}
+     * @return {Promise} {description}
+     */
+    stopContainer(container) {
+        return new Promise((respond,reject) => {
+             bifrost.transmitRequest(POST, `/containers/${container}/stop`,{})
+                .then(  (response)  => respond(response),
+                        (err)       => reject(err) );
+        });
+    }
+    /* +----------------------------------------------------------------------+ */
+
+    /* +----------------------------------------------------------------------+
+     *  Network Operations
+     * +----------------------------------------------------------------------+ */
     
     /**
      * Returns list of current docker networks
@@ -103,8 +199,8 @@ class DockerConnect {
         return new Promise((respond,reject) => {
             networkName = networkName.replace(/ /g,'_');
             bifrost.transmitRequest(POST, '/networks/create', {Name:networkName,Driver:"bridge"})
-                .then(  (result)    => {console.log(result), respond(result)},
-                        (err)       => {console.log(err); reject(err)})
+                .then(  (result)    => respond(result),
+                        (err)       => reject(err)  )
 
         });
     }
@@ -125,13 +221,19 @@ class DockerConnect {
                         console.log(networkId)
                         bifrost.transmitRequest(DELETE, `/networks/${networkId}`)
                             .then(  (result)    => respond(result),
-                                    (err)       => reject(err));
+                                    (err)       => reject(err)  )
                     } else {
                         console.log('Network doesnt exist')
                     }
                 })
         });
-    }
+    } 
+    
+    /* +----------------------------------------------------------------------+ */
+
+    
+
+    
     
 }
 
