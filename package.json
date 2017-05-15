@@ -5,7 +5,7 @@
   "main": "workbench.js",
   "scripts": {
     "start" : "nodemon Boot.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
