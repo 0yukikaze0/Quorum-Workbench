@@ -1,5 +1,13 @@
 {
+    "server"    :   {
+        "port"    :   8500
+    },
     "docker"    :   {
         "socketPath"    :   "/var/run/docker.sock"
+    },
+    "logging"   :   {
+        "info"  :   "/home/ashfaq/logs/Quorum-Workbench/info.log",
+        "debug" :   "/home/ashfaq/logs/Quorum-Workbench/debug.log",
+        "error" :   "/home/ashfaq/logs/Quorum-Workbench/error.log"
     }
 }
